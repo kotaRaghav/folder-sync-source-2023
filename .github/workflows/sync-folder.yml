@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'folder-to-sync/**'  # Trigger only when files inside this folder change
+      - 'folder-to-sync/**'
 
 jobs:
   sync-folder:
