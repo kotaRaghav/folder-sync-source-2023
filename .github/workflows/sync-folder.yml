@@ -1,0 +1,42 @@
+name: Sync Folder to Target Repo
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'folder-to-sync/**'  # Trigger only when files inside this folder change
+
+jobs:
+  sync-folder:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v3
+
+      - name: Copy folder to temp
+        run: |
+          mkdir temp-folder
+          cp -r folder-to-sync temp-folder/
+
+      - name: Checkout target repo
+        uses: actions/checkout@v3
+        with:
+          repository: kotaRaghav/folder-sync-target-2023
+          token: ${{ secrets.TARGET_REPO_PAT }}
+          path: target-repo
+
+      - name: Sync folder to target repo
+        run: |
+          rm -rf target-repo/folder-to-sync
+          cp -r temp-folder/folder-to-sync target-repo/
+
+      - name: Commit and push changes
+        run: |
+          cd target-repo
+          git config user.name "kotaRaghav"
+          git config user.email "raghavendraasdf@gmail.com"
+          git add folder-to-sync
+          git commit -m "Sync folder-to-sync from source repo" || echo "Nothing to commit"
+          git push
